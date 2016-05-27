@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareDope", "CareDope\CareDope.csproj", "{8839791C-C43E-4B16-A210-C91FA56014FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarePath.Domain", "..\..\Dev\CarePath\src\CarePath.Domain\CarePath.Domain.csproj", "{38389570-17F3-4927-98AF-D84C7BF72F42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarePath.Domain", "..\..\..\CarePath\src\CarePath.Domain\CarePath.Domain.csproj", "{38389570-17F3-4927-98AF-D84C7BF72F42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

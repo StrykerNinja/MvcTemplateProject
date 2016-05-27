@@ -1,5 +1,5 @@
 ﻿using CareDope;
-using WebActivator;
+using WebActivatorEx;
 
 [assembly: PreApplicationStartMethod(typeof(StructuremapMvc), "Start")]
 [assembly: ApplicationShutdownMethod(typeof(StructuremapMvc), "End")]
