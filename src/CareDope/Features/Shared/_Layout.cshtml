@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CareDope</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/lodash")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @(Html.Link<CareDope.Features.Accounting.UiController>(c => c.Index(new CareDope.Features.Accounting.Index.Query()), "CareDope").AddClass("navbar-brand"))
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@(Html.Link<CareDope.Features.Accounting.UiController>(c => c.Index(new CareDope.Features.Accounting.Index.Query()), "CareDope").AddClass("navbar-brand"))</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Senderra RX</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        var highlightFields = function (response) {
+            $('.form-group').removeClass('has-error');
+            $.each(response, function (propName, val) {
+                var nameSelector = '[name = "' + propName.replace(/(:|\.|\[|\])/g, "\\$1") + '"]',
+                    idSelector = '#' + propName.replace(/(:|\.|\[|\])/g, "\\$1");
+                var $el = $(nameSelector) || $(idSelector);
+
+                if (val.Errors.length > 0) {
+                    $el.closest('.form-group').addClass('has-error');
+                }
+            });
+        };
+        var highlightErrors = function (xhr) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+                highlightFields(data);
+                showSummary(data);
+                window.scrollTo(0, 0);
+            } catch (e) {
+                // (Hopefully) caught by the generic error handler in `config.js`.
+            }
+        };
+        var showSummary = function (response) {
+            $('#validationSummary').empty().removeClass('hidden');
+
+            var verboseErrors = _.flatten(_.pluck(response, 'Errors')),
+                errors = [];
+
+            var nonNullErrors = _.reject(verboseErrors, function (error) {
+                return error.ErrorMessage.indexOf('must not be empty') > -1;
+            });
+
+            _.each(nonNullErrors, function (error) {
+                errors.push(error.ErrorMessage);
+            });
+
+            if (nonNullErrors.length !== verboseErrors.length) {
+                errors.push('The highlighted fields are required to submit this form.');
+            }
+
+            var $ul = $('#validationSummary').append('<ul></ul>');
+
+            _.each(errors, function (error) {
+                var $li = $('<li></li>').text(error);
+                $li.appendTo($ul);
+            });
+        };
+        var redirect = function (data) {
+            if (data.redirect) {
+                window.location = data.redirect;
+                return false;
+            } else {
+                window.scrollTo(0, 0);
+                window.location.reload();
+            }
+        };
+        $('form[method=post]').not('.no-ajax').on('submit', function () {
+            var submitBtn = $(this).find('[type="submit"]');
+
+            submitBtn.prop('disabled', true);
+            $(window).unbind();
+
+            var $this = $(this),
+                formData = $this.serialize();
+
+            $this.find('div').removeClass('has-error');
+
+            $.ajax({
+                url: $this.attr('action'),
+                xhrFields: {
+                    withCredentials: true
+                },
+                type: 'post',
+                data: formData,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                dataType: 'json',
+                statusCode: {
+                    200: redirect
+                },
+                complete: function () {
+                    submitBtn.prop('disabled', false);
+                }
+            }).error(highlightErrors);
+
+            return false;
+        });
+        // allows dynamic modal dialogs to be reset
+        $('body').on('hidden.bs.modal', '.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('form').not('.no-ajax').on('submit', function () {
+            $(this).find(":input").filter(function () { return !this.value; }).attr("disabled", "disabled");
+            return true; // ensure form still submits
+        });
+    </script>
+</body>
+</html>
